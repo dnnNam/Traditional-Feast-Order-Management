@@ -15,7 +15,15 @@ public class Customers {
 
     // anh quản lí các khách hàng 
     public ArrayList<Customer> cusList = new ArrayList<>();
+    
+    private boolean isSaved;
 
+    public boolean isIsSaved() {
+        return isSaved;
+    }
+    
+    
+    
     // hàm tìm khách hàng trong mảng 
     public Customer searchCustomerById(String cusId) {
         Customer cus;
@@ -26,12 +34,6 @@ public class Customers {
         }
         return null;
     }
-
-   
-    
-   
-    
-    
 
     // hàm thêm một khách hàng 
     public void addNewCustomer() {
@@ -45,7 +47,7 @@ public class Customers {
         do {
             isCheck = false;
             cusId = Inputter.getString("Input your id (C|G|K|????|?is number): ",
-                "Data is invalid! Re-enter...");
+                    "Data is invalid! Re-enter...");
             Customer cus = searchCustomerById(cusId);
             if (Acceptable.isValid(cusId, Acceptable.CUS_ID_VALID) && cus == null) {
                 isCheck = true;
@@ -88,11 +90,11 @@ public class Customers {
             // nhập name
             String newName = Inputter.getString("Input Your Name",
                     "Data is invalid! Re-enter...", Acceptable.NAME_VALID);
-            
+
             // nhập số điện thoại 
             String newPhoneNumber = Inputter.getString("Input Your phoneNumber",
                     "Data is invalid! Re-enter...", Acceptable.PHONE_VALID);
-            
+
             // nhập email 
             String newEmail = Inputter.getString("Input Your Email",
                     "Data is invalid! Re-enter...", Acceptable.EMAIL_VALID);
@@ -107,9 +109,8 @@ public class Customers {
     }
     // hàm tìm thông tin theo name
 
-    public void seachByName() {
+    public void seachByName(ArrayList<Customer> searchedList) {
 
-        ArrayList<Customer> searchedList = new ArrayList<>();
         // nhập name khách hàng cần tìm 
         String keyName = Inputter.getString("Input name a part of name: ",
                 "Data is invalid! Re-enter...");
@@ -121,6 +122,12 @@ public class Customers {
                 System.out.println("No one matches the search criteria");
             }
         }
+        this.displayCustomerList(searchedList);
+
+    }
+
+    // hàm show customer 
+    public void displayCustomerList(ArrayList<Customer> cusList) {
         // in ra các sinh viên đã tìm thấy 
         String str = String.format(
                 "  |------------------------------------------------------------------|\n"
@@ -130,7 +137,7 @@ public class Customers {
                 "  |------------------------------------------------------------------|");
 
         System.out.println(str);
-        for (Customer customer : searchedList) {
+        for (Customer customer : cusList) {
             System.out.println(customer.toString());
         }
         System.out.println(str1);
@@ -145,10 +152,11 @@ public class Customers {
             OutputStreamWriter writer = new OutputStreamWriter(new FileOutputStream(f));
             // duyệt mảng 
             for (Customer cus : cusList) {
-                 
+
                 writer.write(cus.objectIsSaved());
                 writer.write("\n");
             }
+            this.isSaved = true;
             writer.flush(); // lưu rồi tắt
 
         } catch (Exception e) {
@@ -182,7 +190,7 @@ public class Customers {
             String line = reader.readLine();
             while (line != null) {
                 Customer cus = dataToObject(line);
-               
+
                 if (cus != null) {
                     cusList.add(cus);
                 }

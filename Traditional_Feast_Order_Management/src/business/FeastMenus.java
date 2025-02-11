@@ -97,7 +97,7 @@ public class FeastMenus {
                     + "Name: %s\n"
                     + "Price: %s\n"
                     + "Ingredients:\n"
-                    + "%s\n"
+                    + "  %s\n"
                     + "   %s\n"
                     + "   %s\n"
                     + "------------------------------------------------------",

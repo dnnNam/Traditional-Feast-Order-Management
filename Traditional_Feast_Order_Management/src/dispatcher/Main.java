@@ -6,6 +6,7 @@ import business.Orders;
 import java.util.ArrayList;
 import model.Customer;
 import model.FeastMenu;
+import tools.Inputter;
 import tools.Menu;
 
 public class Main {
@@ -31,16 +32,16 @@ public class Main {
         cusManagement.readFromFile();
         feastMenuManagement.readFromFile();
         orderManagement.readFromFile();
-        
+
         int choice = 0;
         while (true) {
             menu.print();
             choice = menu.getChoice();
             switch (choice) {
                 case 1: {
-                     cusManagement.addNewCustomer();
-                break;
-                   
+                    cusManagement.addNewCustomer();
+                    break;
+
                 }
                 case 2: {
                     cusManagement.updateCustomer();
@@ -48,7 +49,7 @@ public class Main {
                 }
 
                 case 3: {
-                    cusManagement.seachByName();
+                    cusManagement.seachByName(cusManagement.cusList);
                     break;
                 }
                 case 4: {
@@ -56,27 +57,72 @@ public class Main {
                     break;
                 }
                 case 5: {
-                    orderManagement.placeAFeastOrder(feastMenuManagement.feaMenu,cusManagement.cusList);
-                        
-                    
+                    boolean isTrue;
+                    String text = "";
+                    do {
+                        isTrue = false;
+                        orderManagement.placeAFeastOrder(feastMenuManagement.feaMenu, cusManagement.cusList);
+                        text = Inputter.getString("Do you want to place another order? (Y/N): ", "Data is invalid! Re-enter...");
+                        if (text.trim().equalsIgnoreCase("N")) {
+                            isTrue = true;
+                        }
+                    } while (!isTrue);
                     break;
                 }
                 case 6: {
 
+                    orderManagement.updateOrderInfor(orderManagement.orderList, feastMenuManagement.feaMenu);
                     break;
                 }
                 case 7: {
                     cusManagement.saveToFile();
+                    orderManagement.saveToFile();
                     System.out.println("successfully saved.");
                     break;
                 }
                 case 8: {
-
+                    Menu menu1 = new Menu("===== Display Options =====");
+                    menu1.addNewOption(" Display Customer List");
+                    menu1.addNewOption(" Display Order List");
+                    menu1.print();
+                    int selection = Inputter.getAnInteger("Input your choice(1/2):  ", 
+                            "This function is not available");
+                    switch (selection) {
+                        case 1: {
+                            cusManagement.displayCustomerList(cusManagement.cusList);
+                            break;
+                        }
+                        case 2: {
+                            orderManagement.disPlayAOrder(orderManagement.orderList);
+                            break;
+                        }
+                        default: {
+                            System.out.println("This function is not available");
+                            break;
+                        }
+                    }
                     break;
                 }
                 case 9: {
+                     boolean isSavedCustomer = cusManagement.isIsSaved() ;
+                     boolean isSavedOrder = orderManagement.isIsSaved();
 
-                    break;
+                    if (isSavedCustomer == false || isSavedOrder == false) {
+                        String result = "";
+                        result = Inputter.getString("Do you want to save the changes before exiting? (Y/N):", "Data is invalid! Re-enter...");
+
+                        if (result.matches("[yY]")) {
+                            cusManagement.saveToFile();
+                            orderManagement.saveToFile();
+                            return;
+                        } else {
+                            return;
+                        }
+                    } else {
+                        return;
+                    }
+                    
+                    
                 }
                 default: {
                     System.out.println("This function is not available");

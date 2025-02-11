@@ -10,6 +10,7 @@ public class Order {
     private String eventDate;
     private int numberOfTable;
     private double totalCost;
+   
     
     // constructor 
 
