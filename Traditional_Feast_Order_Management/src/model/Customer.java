@@ -15,7 +15,7 @@ public class Customer {
     }
 
     public Customer(String cus_id, String name, String phoneNumber, String email) {
-        this.cus_id = cus_id;
+        this.cus_id = cus_id.toUpperCase();
         this.name = name;
         this.phoneNumber = phoneNumber;
         this.email = email;
@@ -71,10 +71,16 @@ public class Customer {
         String fname = name.substring(keyPos, name.length());
         String lname = name.substring(0, keyPos);
         
-        String str = String.format("   %-12s| %-2s, %8s| %-12s| %4s", 
+        String str = String.format(" %-12s| %-2s, %8s| %-12s| %4s", 
                 cus_id , fname ,lname , phoneNumber , email);
         return str;
-    } 
+    }
+    
+    public String objectIsSaved(){
+        String str1 = String.format("%-12s|%-12s| %-12s| %4s", 
+                cus_id , name, phoneNumber , email);
+        return str1;
+    }
     
    
 }

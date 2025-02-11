@@ -39,7 +39,7 @@ public class Menu {
     }
     // method thu thập lựa chọn của người dùng 
      public int getChoice (){
-         int choice = Inputter.getAnInteger("Input your choice", 
+         int choice = Inputter.getAnInteger("Input your choice: ", 
                  "Your choice must be 1 and" + optionList.size(), 1 , optionList.size());
          return choice;
      }

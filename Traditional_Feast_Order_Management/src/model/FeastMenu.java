@@ -66,9 +66,9 @@ public class FeastMenu {
     // hàm in thông tin của thực đơn 
     
     public String toString (){
-        String str = String.format("%-12s| %-12s| %-12f| %4s", 
+        String str5 = String.format("%-12s| %-12s| %-12f| %4s", 
                 menuCode , menuName , price , ingredients);
-        return str;
+        return str5;
     }
     
     
