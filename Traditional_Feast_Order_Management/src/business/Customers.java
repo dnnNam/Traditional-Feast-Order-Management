@@ -15,15 +15,13 @@ public class Customers {
 
     // anh quản lí các khách hàng 
     public ArrayList<Customer> cusList = new ArrayList<>();
-    
+
     private boolean isSaved;
 
     public boolean isIsSaved() {
         return isSaved;
     }
-    
-    
-    
+
     // hàm tìm khách hàng trong mảng 
     public Customer searchCustomerById(String cusId) {
         Customer cus;
@@ -136,11 +134,15 @@ public class Customers {
         String str1 = String.format(
                 "  |------------------------------------------------------------------|");
 
-        System.out.println(str);
-        for (Customer customer : cusList) {
-            System.out.println(customer.toString());
+        if (cusList.isEmpty()) {
+            System.out.println("No data in system");
+        } else {
+            System.out.println(str);
+            for (Customer customer : cusList) {
+                System.out.println(customer.toString());
+            }
+            System.out.println(str1);
         }
-        System.out.println(str1);
     }
 
     // hàm ghi file 

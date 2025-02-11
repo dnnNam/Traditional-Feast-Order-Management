@@ -20,14 +20,12 @@ public class Orders {
 
     // anh quản lí các đơn hàng 
     public ArrayList<Order> orderList = new ArrayList<>();
-    
+
     private boolean isSaved;
 
     public boolean isIsSaved() {
         return isSaved;
     }
-    
-    
 
     // hàm kiểm tra ngày tháng có trong tương lai không 
     public boolean isFutureDate(String dateString) {
@@ -283,27 +281,31 @@ public class Orders {
         String str1 = String.format(
                 "|---------------------------------------------------------------------------------|");
 
-        System.out.println(str);
-        double price;
+        if (orderList.isEmpty()) {
+            System.out.println("No data in system");
+        } else {
+            System.out.println(str);
+            double price;
 
-        for (Order order : orderList) {
-            price = order.getTotalCost() / order.getNumberOfTable();
-            DecimalFormat formatter = new DecimalFormat("#,###,###");
-            String formattedCost = formatter.format(order.getTotalCost());
-            String formattedPrice = formatter.format(price);
-            String str2 = String.format(
-                    "   %s | %s  |  %s    | %s     | %s|  %d   | %s ",
-                    order.getOrder_Id(),
-                    order.getEventDate(),
-                    order.getCus_Id(),
-                    order.getMenu_Id(),
-                    formattedPrice,
-                    order.getNumberOfTable(),
-                    formattedCost);
-            System.out.println(str2);
+            for (Order order : orderList) {
+                price = order.getTotalCost() / order.getNumberOfTable();
+                DecimalFormat formatter = new DecimalFormat("#,###,###");
+                String formattedCost = formatter.format(order.getTotalCost());
+                String formattedPrice = formatter.format(price);
+                String str2 = String.format(
+                        "   %s | %s  |  %s    | %s     | %s|  %d   | %s ",
+                        order.getOrder_Id(),
+                        order.getEventDate(),
+                        order.getCus_Id(),
+                        order.getMenu_Id(),
+                        formattedPrice,
+                        order.getNumberOfTable(),
+                        formattedCost);
+                System.out.println(str2);
 
+            }
+            System.out.println(str1);
         }
-        System.out.println(str1);
     }
 
     // hàm lưu file 
