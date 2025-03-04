@@ -7,6 +7,8 @@ import java.io.FileReader;
 import java.io.OutputStreamWriter;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.StringTokenizer;
@@ -30,39 +32,56 @@ public class Orders {
     // hàm kiểm tra ngày tháng có trong tương lai không 
     public boolean isFutureDate(String dateString) {
         try {
-            SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
-            sdf.setLenient(false);
-
-            Date inputDate = sdf.parse(dateString);
-            Date today = new Date();
-
-            return inputDate.after(today);
-        } catch (Exception e) {
-            return false;
-        }
-    }
-
-    public boolean checkUpdateEventDate(String dateString, String dateRegister) {
-        try {
-            SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
-            sdf.setLenient(false);
-
-            Date inputDate = sdf.parse(dateString); // chỉ lấy ngày bỏ giờ 
-            Date registeredDate = sdf.parse(dateRegister); // biến thành kiểu Date
-            Date today = new Date();
-
-            // nếu ngày trong tương lai và chưa tới ngày đăng kí thì cho update
-            if (inputDate.after(today) && inputDate.before(registeredDate)) {
-                return true;
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+            LocalDate inputDate = LocalDate.parse(dateString, formatter);
+            LocalDate today = LocalDate.now(); // Lấy ngày hiện tại, không có thời gian
+            
+            inputDate.format(formatter);
+            today.format(formatter);
+            // Kiểm tra xem ngày nhập vào có hợp lệ hay không
+            if (!dateString.equals(inputDate.format(formatter))) {
+                 return false;
             }
+            
+            if(inputDate.isAfter(today)){
+                return true;
+            }else{
+                return false;
+            }
+           
+        } catch (Exception e) {
             return false;
+        }
+    }
+    
+    public boolean isFutureDateUpdate(String dateString , String registerDate) {
+        try {
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+            LocalDate inputDate = LocalDate.parse(dateString, formatter);
+            LocalDate today = LocalDate.now(); // Lấy ngày hiện tại, không có thời gian
+            LocalDate inputRegisterDate = LocalDate.parse(registerDate, formatter);
+    
+            // Kiểm tra xem ngày nhập vào có hợp lệ hay không
+            if (!dateString.equals(inputDate.format(formatter))) {
+                 return false;
+            }
+            
 
+            
+            if(inputDate.isAfter(today) && inputDate.isAfter(inputRegisterDate)){
+                return true;
+            }else{
+                return false;
+            }
+           
         } catch (Exception e) {
             return false;
         }
     }
 
-    public boolean checkisDupEventDate(String eventDate) {
+   
+
+    public boolean checkisDupEventDate(String eventDate, ArrayList<Order> orderList) {
         for (Order order : orderList) {
             if (order.getEventDate().equals(eventDate)) {
                 return false;  // dã bị trùng đơn hàng 
@@ -71,10 +90,12 @@ public class Orders {
         return true; // không trùng 
     }
 
+//        !dateString.equals(inputDate.format(formatter)
     // hàm kiểm tra xem coi đơn hàng đã được đặt chưa 
-    public boolean checkisDupMenuCode(String menuCode) {
-        for (Order order : this.orderList) {
-            if (order.getMenu_Id().equals(menuCode)) {
+    public boolean checkisDupMenuCode(Order checkOrder, ArrayList<Order> orderList) {
+        for (Order order : orderList) {
+            if (order.getCus_Id().equals(checkOrder.getCus_Id()) &&
+                 order.getMenu_Id().equals(checkOrder.getMenu_Id())){
                 return false;  // dã bị trùng đơn hàng 
             }
         }
@@ -82,7 +103,7 @@ public class Orders {
     }
 
     // hàm giúp kiểm tra khách hàng  đặt 2 đơn hàng có ngày tổ chức giống nhau 
-    public boolean checkEventDate(Order keyOrder) {
+    public boolean checkEventDate(Order keyOrder, ArrayList<Order> orderList) {
         for (Order order : orderList) {
             // Kiểm tra cùng khách hàng và cùng ngày tổ chức
             if (order.getCus_Id().equals(keyOrder.getCus_Id())
@@ -94,7 +115,8 @@ public class Orders {
     }
 
     // hàm cho khách hàng đặt hàng 
-    public void placeAFeastOrder(ArrayList<FeastMenu> fmManagement, ArrayList<Customer> cusManagement) {
+    public void placeAFeastOrder(ArrayList<FeastMenu> fmManagement, ArrayList<Customer> cusManagement,
+            ArrayList<Order> orderList) {
         // kiểm tra xem khách hàng có đăng kí chưa 
         boolean ischeck = false;
         Customer cus = null;
@@ -140,14 +162,17 @@ public class Orders {
         int numberOfTable = Inputter.getAnInteger("Input your number of Table",
                 "Data is invalid! Re-enter...", 1, 10000);
         // nhập ngày tổ chức sự kiện
-        boolean isTrue = false;
+        boolean isTrue = false; 
         String eventDate = "";
         // kiểm tra xem do nhập ngày tháng đúng ko
-        while (!isTrue) {
+        while (true) {
             // nhập ngày tháng
-            eventDate = Inputter.getString("Input your Event Date(dd/mm/yyyy): ",
-                    "Data is invalid! Re-enter...", "^(0[1-9]|[12][0-9]|3[01])/(0[1-9]|1[0-2])/(20[2-9][0-9]|20[1-9][1-9])$");
-            if (isFutureDate(eventDate)) {
+             eventDate = Inputter.getString("Input event date: ",
+                        "Data is invalid !. Re-enter ...", Acceptable.DATE_EVENT);
+            
+            boolean isDate = isFutureDate(eventDate);
+          
+            if (isDate) {
                 break;
             } else {
                 System.out.println("Data is invalid! Re-enter... ");
@@ -161,8 +186,11 @@ public class Orders {
         Order newOrder = new Order(order_id, cus.getCus_id(), fm.getMenuCode(), eventDate, numberOfTable, totalCost);
 
         /// kiểm tra xem đơn hàng hoặc ngày đặt có bị trùng hay không 
-        if (this.checkisDupMenuCode(codeMenu) && this.checkisDupEventDate(eventDate)
-                && checkEventDate(newOrder)) {
+        boolean isDupDate = this.checkisDupEventDate(eventDate, orderList);
+        boolean isDupMenuCode = this.checkisDupMenuCode(newOrder, orderList);
+        boolean isCheckDate = this.checkEventDate(newOrder, orderList);
+        if (isDupMenuCode && isDupDate
+                && isCheckDate) {
             StringTokenizer st = new StringTokenizer(fm.getIngredients(), "#");
             String appetizer = st.nextToken().trim().substring(1);
             String mainCourse = st.nextToken().trim();
@@ -252,11 +280,12 @@ public class Orders {
         boolean isCheck = false;
         String eventDateUpdate = "";
         // kiểm tra xem do nhập ngày tháng đúng ko
+        String registerDate = updateOrder.getEventDate();
         while (!isCheck) {
             // nhập ngày tháng
-            eventDateUpdate = Inputter.getString("Input your Event Date(dd/mm/yyyy): ",
-                    "Data is invalid! Re-enter...", "^(0[1-9]|[12][0-9]|3[01])/(0[1-9]|1[0-2])/(20[2-9][0-9]|20[1-9][1-9])$");
-            if (checkUpdateEventDate(eventDateUpdate, updateOrder.getEventDate())) {
+             eventDateUpdate = Inputter.getString("Input event date: ",
+                        "Data is invalid !. Re-enter ...", Acceptable.DATE_EVENT);
+            if (isFutureDateUpdate(eventDateUpdate , registerDate)) {
                 break;
             } else {
                 System.out.println("Data is invalid! Re-enter... ");
@@ -276,7 +305,7 @@ public class Orders {
     public void disPlayAOrder(ArrayList<Order> orderList) {
         String str = String.format(
                 "|---------------------------------------------------------------------------------|\n"
-                + "  ID | Event date  |Customer ID| Set Menu  |  Price   |Tables| Cost  \n"
+                + "  ID | Event date  |Customer ID| Set Menu  |  Price       |Tables| Cost  \n"
                 + "|-------------------------------------------------------------------------------|\n");
         String str1 = String.format(
                 "|---------------------------------------------------------------------------------|");
@@ -293,7 +322,7 @@ public class Orders {
                 String formattedCost = formatter.format(order.getTotalCost());
                 String formattedPrice = formatter.format(price);
                 String str2 = String.format(
-                        "   %s | %s  |  %s    | %s     | %s|  %d   | %s ",
+                        "   %s | %s  |  %s    | %s     | %10s   |  %d   | %s ",
                         order.getOrder_Id(),
                         order.getEventDate(),
                         order.getCus_Id(),

@@ -16,7 +16,7 @@ public class Main {
         Menu menu = new Menu("Traditional Feast Order Management..");
         // thêm option nha 
         menu.addNewOption("Register customers");
-        menu.addNewOption("Update customer information");
+        menu.addNewOption("Update customer information");                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            
         menu.addNewOption("Search for customer information by name");
         menu.addNewOption("Display feast menus");
         menu.addNewOption("Place a feast order");
@@ -49,6 +49,7 @@ public class Main {
                 }
 
                 case 3: {
+                  
                     cusManagement.seachByName(cusManagement.cusList);
                     break;
                 }
@@ -61,7 +62,7 @@ public class Main {
                     String text = "";
                     do {
                         isTrue = false;
-                        orderManagement.placeAFeastOrder(feastMenuManagement.feaMenu, cusManagement.cusList);
+                        orderManagement.placeAFeastOrder(feastMenuManagement.feaMenu, cusManagement.cusList , orderManagement.orderList);
                         text = Inputter.getString("Do you want to place another order? (Y/N): ", "Data is invalid! Re-enter...");
                         if (text.trim().equalsIgnoreCase("N")) {
                             isTrue = true;

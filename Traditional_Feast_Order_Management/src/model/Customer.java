@@ -71,7 +71,7 @@ public class Customer {
         String fname = name.substring(keyPos, name.length());
         String lname = name.substring(0, keyPos);
         
-        String str = String.format(" %-12s| %-2s, %8s| %-12s| %4s", 
+        String str = String.format(" %-12s|%-5s, %21s | %-12s| %4s", 
                 cus_id , fname ,lname , phoneNumber , email);
         return str;
     }

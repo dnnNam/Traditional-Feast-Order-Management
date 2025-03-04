@@ -77,6 +77,7 @@ public class FeastMenus {
      
     public void displayFeastMenus(ArrayList<FeastMenu> menuList) {
          ArrayList<FeastMenu> tmp = new ArrayList<>(menuList);
+         tmp = this.sortAcsByPrice(menuList);
         String str = String.format(
         "|------------------------------------------------------------------|\n"
         +"              List of Set Menus for ordering party:\n"

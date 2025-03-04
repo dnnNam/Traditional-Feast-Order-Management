@@ -6,6 +6,8 @@ import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.OutputStreamWriter;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.StringTokenizer;
 import model.Customer;
 import tools.Acceptable;
@@ -82,7 +84,7 @@ public class Customers {
                 "Data is invalid! Re-enter... ");
 
         Customer updateCus = searchCustomerById(keyId);
-        if (Acceptable.isValid(keyId, Acceptable.CUS_ID_VALID) && updateCus == null) {
+        if ( updateCus == null) {
             System.out.println("This customer does not exist!!!");
         } else {
             // nhập name
@@ -108,31 +110,57 @@ public class Customers {
     // hàm tìm thông tin theo name
 
     public void seachByName(ArrayList<Customer> searchedList) {
-
+       ArrayList<Customer> sortList = new ArrayList<>();
         // nhập name khách hàng cần tìm 
         String keyName = Inputter.getString("Input name a part of name: ",
                 "Data is invalid! Re-enter...");
         // duyệt mảng và tìm 
-        for (Customer cus : cusList) {
+          
+        boolean found = false;
+        for (Customer cus : searchedList) {
             if (cus.getName().contains(keyName)) {
-                searchedList.add(cus);
-            } else {
-                System.out.println("No one matches the search criteria");
+                sortList.add(cus);
+                found = true;
             }
         }
-        this.displayCustomerList(searchedList);
-
+      
+        
+        if(found == false){
+            System.out.println("No one matches the search criteria"); 
+        }else{
+              // Sắp xếp danh sách theo tên
+            sortList = this.sortAcsByName(sortList);
+            // Hiển thị danh sách khách hàng đã sắp xếp
+            this.displayCustomerList(sortList);
+        }
+       
     }
+    
+    public ArrayList<Customer> sortAcsByName(ArrayList<Customer> cusList){
+         ArrayList<Customer> tmp = new ArrayList<>(cusList);
+         
+         // sắp xép danh sách dựa vào price 
+         Comparator orderByName = new Comparator<Customer>() {
+             @Override
+             public int compare(Customer c1, Customer c2) {
+                 String lastName = c1.getName().substring(c1.getName().lastIndexOf(" ") + 1);
+                  String lastName2 = c2.getName().substring(c2.getName().lastIndexOf(" ") + 1);
+                 return lastName.compareTo(lastName2);
+             }
+         };
+         Collections.sort(tmp, orderByName);
+         return tmp;
+     }
 
     // hàm show customer 
     public void displayCustomerList(ArrayList<Customer> cusList) {
         // in ra các sinh viên đã tìm thấy 
         String str = String.format(
-                "  |------------------------------------------------------------------|\n"
-                + "  | Code  |Customer Name        |  Phone      | Email   \n"
-                + "  |------------------------------------------------------------------|\n");
+                "|-------------------------------------------------------------------------------------------------|\n"
+                + "|    Code    |       Customer Name         |    Phone     | Email   \n"
+                + "|-----------------------------------------------------------------------------------------------|\n");
         String str1 = String.format(
-                "  |------------------------------------------------------------------|");
+                "|-------------------------------------------------------------------------------------------------|");
 
         if (cusList.isEmpty()) {
             System.out.println("No data in system");
